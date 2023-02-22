@@ -104,6 +104,7 @@ for i in robot.tracker:
     worksheet.write("B{}".format(index),i[0, 1])
     worksheet.write("C{}".format(index),i[0, 2])
     index+=1
+    print(worksheet)
 
 workbook.close()
 
