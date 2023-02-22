@@ -94,6 +94,7 @@ void loop()
     lSpeed(v);
   } else {
     rMotor(0);
+    lMotor(0);
   }
   Serial.println(distance());
   delay(500);
