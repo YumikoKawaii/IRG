@@ -16,9 +16,11 @@ class Robot:
         self.px = px
         self.py = py
         self.theta = theta
-        self.tracker = np.matrix([px, py, theta], dtype=float)
+        self.tracker = np.matrix([0, 0, px, py, theta], dtype=float)
     
     def setVelocity(self, wl, wr):
+        self.wl = wl
+        self.wr = wr
         self.w = (wr - wl)*self.r/self.l
         self.v = (wr + wl)*self.r/2
         
@@ -26,7 +28,7 @@ class Robot:
         self.dT = dT
 
     def appendTracker(self):
-        self.tracker = np.append(self.tracker,[[self.px, self.py, self.theta]], axis=0)
+        self.tracker = np.append(self.tracker,[[self.wl, self.wr, self.px, self.py, self.theta]], axis=0)
     
     def nextPos(self):
         self.px = self.px + self.v*self.dT*math.cos((self.theta + self.theta + self.w*self.dT)/2)
@@ -69,7 +71,7 @@ def move(t, wl, wr):
         x2 = robot.px + (robot.R + 0.05)*math.cos(robot.theta)
         y2 = robot.py + (robot.R + 0.05)*math.sin(robot.theta)
 
-        path, = plt.plot(robot.tracker[0:len(robot.tracker), 0], robot.tracker[0:len(robot.tracker), 1], color="red")
+        path, = plt.plot(robot.tracker[0:len(robot.tracker), 2], robot.tracker[0:len(robot.tracker), 3], color="red")
         line, = plt.plot([robot.px, x2], [robot.py, y2],color="black")
         r, = plt.plot(x_r, y_r, color="black")
         
@@ -93,9 +95,11 @@ perform(plan)
 workbook = xlsxwriter.Workbook("position_tracking.xlsx")
 worksheet = workbook.add_worksheet()
 
-worksheet.write('A1',"Pos_x")
-worksheet.write('B1',"Pos_y")
-worksheet.write('C1',"Theta")
+worksheet.write('A1',"w_r")
+worksheet.write('B1',"w_l")
+worksheet.write('C1',"pos_x")
+worksheet.write('D1',"pos_y")
+worksheet.write('E1',"theta")
 
 index = 2
 
@@ -103,6 +107,8 @@ for i in robot.tracker:
     worksheet.write("A{}".format(index),i[0, 0])
     worksheet.write("B{}".format(index),i[0, 1])
     worksheet.write("C{}".format(index),i[0, 2])
+    worksheet.write("D{}".format(index),i[0, 3])
+    worksheet.write("E{}".format(index),i[0, 4])
     index+=1
 
 workbook.close()
